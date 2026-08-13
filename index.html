@@ -154,10 +154,46 @@
   <script src="assets/react.production.min.js"></script>
   <script src="assets/react-dom.production.min.js"></script>
   <script>
+    const MOBILE_BREAKPOINT = 768;
     const IMAGE_CLICK_ENABLED = true;
     const IMAGE_TARGET_URL = 'https://google.com';
 
+    function useMobileViewport() {
+      const query = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`;
+      const [isMobile, setIsMobile] = React.useState(() => window.matchMedia(query).matches);
+
+      React.useEffect(() => {
+        const mediaQuery = window.matchMedia(query);
+        let frameId;
+
+        const updateViewport = () => {
+          window.cancelAnimationFrame(frameId);
+          frameId = window.requestAnimationFrame(() => setIsMobile(mediaQuery.matches));
+        };
+
+        mediaQuery.addEventListener('change', updateViewport);
+        window.addEventListener('resize', updateViewport);
+        window.addEventListener('orientationchange', updateViewport);
+        updateViewport();
+
+        return () => {
+          window.cancelAnimationFrame(frameId);
+          mediaQuery.removeEventListener('change', updateViewport);
+          window.removeEventListener('resize', updateViewport);
+          window.removeEventListener('orientationchange', updateViewport);
+        };
+      }, [query]);
+
+      return isMobile;
+    }
+
     function HeroImage() {
+      const isMobile = useMobileViewport();
+
+      if (!isMobile) {
+        return null;
+      }
+
       function handleClick(event) {
         if (!IMAGE_CLICK_ENABLED) {
           event.preventDefault();
