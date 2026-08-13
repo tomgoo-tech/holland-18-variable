@@ -108,6 +108,10 @@
       article { width: min(calc(100% - 28px), 860px); padding-top: 46px; }
       body { line-height: 1.65; }
     }
+
+    @media (min-width: 768px) {
+      .hero { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -153,33 +157,10 @@
   <script src="assets/react.production.min.js"></script>
   <script src="assets/react-dom.production.min.js"></script>
   <script>
-    const MOBILE_BREAKPOINT = 768;
     const IMAGE_CLICK_ENABLED = true;
     const IMAGE_TARGET_URL = 'https://google.com';
 
-    function useMobileViewport() {
-      const getIsMobile = () => window.innerWidth < MOBILE_BREAKPOINT;
-      const [isMobile, setIsMobile] = React.useState(getIsMobile);
-
-      React.useEffect(() => {
-        const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
-        const updateViewport = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-
-        mediaQuery.addEventListener('change', updateViewport);
-        updateViewport();
-        return () => mediaQuery.removeEventListener('change', updateViewport);
-      }, []);
-
-      return isMobile;
-    }
-
     function HeroImage() {
-      const isMobile = useMobileViewport();
-
-      if (!isMobile) {
-        return null;
-      }
-
       function handleClick(event) {
         if (!IMAGE_CLICK_ENABLED) {
           event.preventDefault();
